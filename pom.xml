@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hu</groupId>
+    <artifactId>IPersistence</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <!--        这个和本地Maven的setting有关联，如果之前和我一样，这里直接这样写就行了-->
+        <github.global.server>github</github.global.server>
+    </properties>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.49</version>
+        </dependency>
+
+        <!--数据库链接池-->
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+        <!--dom4j解析 start-->
+        <dependency>
+            <groupId>org.jvnet.hudson.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1-hudson-3</version>
+        </dependency>
+
+        <!--配合dom4j使用的-->
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.1-beta-6</version>
+        </dependency>
+        <!--dom4j解析 end-->
+    </dependencies>
+
+
+    <repositories>
+        <repository>
+            <id>IPersistence</id>
+            <url>https://raw.github.com/HuChen-dot/IPersistence/master/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <!--            下面的plugin都直接复制吧，注意改一些配置和自己的项目以及github仓库对应，我也是复制过来的-->
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <!--                    把test-one改成你自己的项目-->
+                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/IPersistence
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <configuration>
+                    <message>Maven artifacts for ${project.version}</message>
+                    <noJekyll>true</noJekyll>
+                    <!--                    这个test-one和altDeploymentRepository中的对应-->
+                    <outputDirectory>${project.build.directory}/IPersistence</outputDirectory><!--本地jar地址-->
+                    <!--                    分支说是要refs/heads/开头-->
+                    <branch>refs/heads/master</branch><!--分支的名称-->
+                    <merge>true</merge>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <!--对应github上创建的仓库名称 name-->
+                    <repositoryName>IPersistence</repositoryName>
+                    <!--github 仓库所有者即登录用户名-->
+                    <repositoryOwner>HuChen-dot</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
