@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hu</groupId>
+    <artifactId>IPersistence</artifactId>
+    <version>2.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <!--  这个和本地Maven的setting有关联，如果之前和我一样，这里直接这样写就行了-->
+        <github.global.server>github</github.global.server>
+    </properties>
+
+
+    <repositories>
+        <repository>
+            <!--你的项目名-->
+            <id>IPersistence</id>
+            <!--https://raw.github.com/用户名/项目名/项目所在的分支/-->
+            <url>https://raw.github.com/HuChen-dot/IPersistence/master/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.49</version>
+        </dependency>
+
+        <!--数据库链接池-->
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+        <!--dom4j解析 start-->
+        <dependency>
+            <groupId>org.jvnet.hudson.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1-hudson-3</version>
+        </dependency>
+
+        <!--配合dom4j使用的-->
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.1-beta-6</version>
+        </dependency>
+        <!--dom4j解析 end-->
+    </dependencies>
+
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <!--                    把 testmaven 改成你自己的项目名，其他不用动-->
+                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/IPersistence
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <configuration>
+                    <message>Maven artifacts for ${project.version}</message>
+                    <noJekyll>true</noJekyll>
+                    <!--                    这个 testmaven 和上面的altDeploymentRepository标签中的对应-->
+                    <outputDirectory>${project.build.directory}/IPersistence</outputDirectory>
+                    <!-- refs/heads/你项目所在的分支名称-->
+                    <branch>refs/heads/master</branch>
+                    <merge>true</merge>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <!--对应github上创建的仓库名称name,这个是你github上的仓库名，不是你项目的名字
+                    	但是一般创建仓库时名称和项目名称都是一样的，-->
+                    <repositoryName>IPersistence</repositoryName>
+                    <!--github 仓库所有者即登录用户名，这个不是第一步设置的用户名，而是登录名，查看方式在第二步中已经给出-->
+                    <repositoryOwner>HuChen-dot</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
