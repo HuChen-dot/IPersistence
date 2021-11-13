@@ -1,11 +1,11 @@
 package com.hu.session;
 
+import com.hu.config.sql.SqlIfAnalysis;
 import com.hu.util.ParameterMappingTokenHandler;
 import com.hu.bean.BoundSql;
 import com.hu.bean.Configuration;
 import com.hu.bean.MapperStatement;
 import com.hu.bean.ParameterMapping;
-import com.hu.config.sql.SqlAnalysis;
 import com.hu.util.GenericTokenParser;
 
 import java.lang.reflect.Field;
@@ -86,7 +86,7 @@ public class SimpleExecutor  implements Executor{
         Connection connection = configuration.getDataSource().getConnection();
 
         //解析<if>条件
-        String sql = SqlAnalysis.analysis(mapperStatement, param);
+        String sql = SqlIfAnalysis.analysis(mapperStatement, param);
 
 //        select * from user where id=#{id}
 //

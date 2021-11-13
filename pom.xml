@@ -6,7 +6,7 @@
 
     <groupId>com.hu</groupId>
     <artifactId>IPersistence</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -22,7 +22,7 @@
             <!--你的项目名-->
             <id>IPersistence</id>
             <!--https://raw.github.com/用户名/项目名/项目所在的分支/-->
-            <url>https://raw.github.com/HuChen-dot/IPersistence/master/</url>
+            <url>https://raw.github.com/HuChen-dot/IPersistence/dev/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
@@ -60,6 +60,12 @@
             <version>1.1-beta-6</version>
         </dependency>
         <!--dom4j解析 end-->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
     </dependencies>
 
 
@@ -86,7 +92,7 @@
                     <!--                    这个 testmaven 和上面的altDeploymentRepository标签中的对应-->
                     <outputDirectory>${project.build.directory}/IPersistence</outputDirectory>
                     <!-- refs/heads/你项目所在的分支名称-->
-                    <branch>refs/heads/master</branch>
+                    <branch>refs/heads/dev</branch>
                     <merge>true</merge>
                     <includes>
                         <include>**/*</include>

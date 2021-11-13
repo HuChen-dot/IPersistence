@@ -21,5 +21,10 @@
       <option name="name" value="IPersistence" />
       <option name="url" value="https://raw.github.com/HuChen-dot/IPersistence/master/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="IPersistence" />
+      <option name="name" value="IPersistence" />
+      <option name="url" value="https://raw.github.com/HuChen-dot/IPersistence/dev/" />
+    </remote-repository>
   </component>
 </project>
