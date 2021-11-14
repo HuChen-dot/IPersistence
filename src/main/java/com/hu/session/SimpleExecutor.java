@@ -102,11 +102,11 @@ public class SimpleExecutor implements Executor {
 //        select * from user where id=#{id}
 //
 //        select * from user where id=?
-        System.err.println("解析前的sql1:-->" + sql);
+        System.err.println("解析前的sql:-->" + sql);
         //解析占位符
         BoundSql boundSql = getBoundSql(sql);
         String sql1 = boundSql.getSql();
-        System.err.println("解析后的sql1:-->" + sql1);
+        System.err.println("解析后的sql:-->" + sql1);
         PreparedStatement preparedStatement = connection.prepareStatement(sql1);
 
         //设置参数
