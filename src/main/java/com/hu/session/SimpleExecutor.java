@@ -18,7 +18,7 @@ import java.util.List;
  * @Description: 执行器对象实现类
  * @DateTime: 2021/10/30 8:57 下午
  **/
-public class SimpleExecutor  implements Executor{
+public class SimpleExecutor implements Executor {
 
 
     /**
@@ -35,30 +35,36 @@ public class SimpleExecutor  implements Executor{
         //获取预编译对象
         PreparedStatement preparedStatement = getPreparedStatement(configuration, mapperStatement, param);
 
+        List<String> columns = unSql(mapperStatement.getSql());
+
 
         ResultSet resultSet = preparedStatement.executeQuery();
-
+        //获取返回值类型
         Class<?> resultTypeClazz = Class.forName(mapperStatement.getResultType());
         List<Object> list = new ArrayList<>();
         while (resultSet.next()) {
             ResultSetMetaData metaData = resultSet.getMetaData();
+            //实例化一个返回值对象，
             Object o1 = resultTypeClazz.newInstance();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                //获取列名
-                String columnName = metaData.getColumnName(i);
-                //去除下划线
-                columnName = removeUnderline(columnName);
-                //获取列值
-                Object object = resultSet.getObject(columnName);
-                Field declaredField = resultTypeClazz.getDeclaredField(columnName);
-                declaredField.setAccessible(true);
-                declaredField.set(o1, object);
+            if (columns.size() == 1 && columns.get(0).equals("*")) {
+                for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    //获取列名
+                    String columnName = metaData.getColumnName(i);
+                    setField( resultSet,columnName,resultTypeClazz, o1);
 
+                }
+            }else {
+                for (String column : columns) {
+                    setField( resultSet,column,resultTypeClazz, o1);
+                }
             }
+
             list.add(o1);
         }
         return (List<T>) list;
     }
+
+
 
 
     /**
@@ -71,16 +77,21 @@ public class SimpleExecutor  implements Executor{
      */
     @Override
     public int change(Configuration configuration, MapperStatement mapperStatement, Object... param) throws Exception {
-
         //获取预编译对象
         PreparedStatement preparedStatement = getPreparedStatement(configuration, mapperStatement, param);
         return preparedStatement.executeUpdate();
     }
 
 
-
-
-
+    /**
+     * 获取预编译对象
+     *
+     * @param configuration
+     * @param mapperStatement
+     * @param param
+     * @return
+     * @throws Exception
+     */
     private PreparedStatement getPreparedStatement(Configuration configuration, MapperStatement mapperStatement, Object... param) throws Exception {
         //获取Connection
         Connection connection = configuration.getDataSource().getConnection();
@@ -91,11 +102,11 @@ public class SimpleExecutor  implements Executor{
 //        select * from user where id=#{id}
 //
 //        select * from user where id=?
-        System.err.println("解析前的sql:-->" + sql);
+        System.err.println("解析前的sql1:-->" + sql);
         //解析占位符
         BoundSql boundSql = getBoundSql(sql);
         String sql1 = boundSql.getSql();
-        System.err.println("解析后的sql:-->" + sql1);
+        System.err.println("解析后的sql1:-->" + sql1);
         PreparedStatement preparedStatement = connection.prepareStatement(sql1);
 
         //设置参数
@@ -132,15 +143,65 @@ public class SimpleExecutor  implements Executor{
             return columnName;
         }
         String[] s = columnName.split("_");
-        String s1 = s[0];
+        StringBuffer column = new StringBuffer(s[0]);
         for (int i = 1; i < s.length; i++) {
             String s2 = s[i];
-            String substring = s2.substring(0, 1).toUpperCase();
-            String substring1 = s2.substring(1);
-            s1 = s1 + substring + substring1;
+            char c = s2.charAt(0);
+            if (c < 97) {
+                column.append(s2);
+                continue;
+            }
+            c = (char) (c - 32);
+            column.append(c).append(s2.substring(1));
+        }
+        return column.toString();
+    }
+
+    /**
+     * 解析出想要查询的列
+     * @param sql
+     * @return
+     */
+    private  List<String> unSql(String sql) {
+        sql = sql.trim();
+        sql = sql.substring(6, sql.indexOf("from"));
+        List<String> comm = new ArrayList<>();
+        if (sql.indexOf("*") != -1) {
+            comm.add("*");
+            return comm;
+        }
+        String[] split = sql.split(",");
+        for (int i = 0; i < split.length; i++) {
+            String s = split[i].trim();
+            String s1 = s.toLowerCase();
+            if (s1.indexOf(" as ") == -1) {
+                comm.add(s);
+                continue;
+            }
+            String s3 = s.split(" ")[2];
+            s3 = s3.replace("\"", "");
+            comm.add(s3.trim());
         }
 
-        return s1;
+        return comm;
+    }
+
+    /**
+     * 给对象设置值
+     * @param resultSet
+     * @param column
+     * @param resultTypeClazz
+     * @param o1
+     * @throws Exception
+     */
+    private void setField(ResultSet resultSet,String column,Class<?> resultTypeClazz,Object o1) throws Exception {
+        //获取列值
+        Object object = resultSet.getObject(column);
+        //去除下划线
+        column = removeUnderline(column);
+        Field declaredField = resultTypeClazz.getDeclaredField(column);
+        declaredField.setAccessible(true);
+        declaredField.set(o1, object);
     }
 
     private BoundSql getBoundSql(String sql) {
