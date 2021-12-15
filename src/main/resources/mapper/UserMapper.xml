@@ -1,0 +1,111 @@
+<namespace namespace="user">
+
+
+    <!--根据ID查询单个 user.serlectOne-->
+    <select id="selectOne" resultType="com.hu.test.pojo.User" parameterType="com.hu.test.pojo.User">
+        select id as "id", user_name AS "userName", pass_word as "passWord", age as "age"
+        from `t_user` where id=#{id}
+    </select>
+
+    <!--查询所有-->
+    <select id="selectList" resultType="com.hu.test.pojo.User">
+        select *
+        from `t_user`
+    </select>
+
+
+    <!--根据参数查询，拼接查询条件-->
+    <select id="selectListByParam" resultType="com.hu.test.pojo.User" parameterType="com.hu.test.pojo.User">
+        select id as "id", user_name as "userName", pass_word as "passWord", age as "age"
+        from `t_user`
+        <where>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+            <if test="userName != null">
+                and user_name=#{userName}
+            </if>
+            <if test="age != null">
+                and age=#{age}
+            </if>
+            <if test="passWord != null">
+                and pass_word=#{passWord}
+            </if>
+        </where>
+    </select>
+
+    <!--添加不为null的属性-->
+    <insert id="add" parameterType="com.hu.test.pojo.User">
+        insert into `t_user` (
+        <if test="id != null">
+            id,
+        </if>
+        <if test="userName != null">
+            user_name,
+        </if>
+        <if test="age != null">
+            age,
+        </if>
+        <if test="passWord != null">
+            pass_word,
+        </if>
+      ) values (
+        <if test="id != null">
+            #{id},
+        </if>
+        <if test="userName != null">
+           #{userName},
+        </if>
+        <if test="age != null">
+          #{age},
+        </if>
+        <if test="passWord != null">
+           #{passWord},
+        </if>
+      )
+    </insert>
+
+
+
+    <!--更新-->
+    <update id="update" parameterType="com.hu.test.pojo.User">
+        update `t_user`
+        set
+        <if test="userName != null">
+            user_name=#{userName},
+        </if>
+        <if test="age != null">
+            age=#{age},
+        </if>
+        <if test="passWord != null">
+            pass_word=#{passWord},
+        </if>
+        WHERE
+        <where>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+        </where>
+    </update>
+
+    <!--删除-->
+    <delete id="delete" parameterType="com.hu.test.pojo.User">
+        delete from `t_user`
+        <where>
+            <if test="id != null">
+                and id=#{id}
+            </if>
+            <if test="userName !=null">
+                and user_name=#{userName}
+            </if>
+            <if test="age != null">
+                and age=#{age}
+            </if>
+            <if test="passWord != null">
+                and pass_word=#{passWord}
+            </if>
+        </where>
+    </delete>
+
+
+</namespace>
